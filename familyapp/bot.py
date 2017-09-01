@@ -16,7 +16,7 @@ class Bot(object):
         self.url = kwargs.get('url', 'https://api.familyapp.io/')
 
     def _request(self, suffix_url, data):
-        headers = {'User-Agent': 'familyapp.py/0.0.1', 'Authorization': self.token}
+        headers = {'User-Agent': 'familyapp.py/0.0.2', 'Authorization': self.token}
         r = requests.post(self.url + suffix_url, json=data, headers=headers)
         if r.status_code in [200, 201]:
             return r.json()

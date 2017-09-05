@@ -16,21 +16,25 @@ class Bot(object):
         self.url = kwargs.get('url', 'https://api.familyapp.io/')
 
     def _request(self, suffix_url, data):
-        headers = {'User-Agent': 'familyapp.py/0.0.2', 'Authorization': self.token}
+        headers = {'User-Agent': 'familyapp.py/0.0.3', 'Authorization': self.token}
         r = requests.post(self.url + suffix_url, json=data, headers=headers)
         if r.status_code in [200, 201]:
             return r.json()
 
         raise APIException(r.text, status_code=r.status_code)
         
-    def send_message(self, family_id, conversation_id, message, quick_replies=None):
-        if not quick_replies:
-            quick_replies = []
+    def send_message(self, family_id, conversation_id, message, **kwargs):
+        quick_replies = kwargs.get('quick_replies', [])
+        audio_remote_url = kwargs.get('audio_remote_url', None)
 
         """send textual message"""
         return self._request(
             'bot_api/v1/families/%d/conversations/%d/messages' % (family_id, conversation_id),
-            data={'content': message, 'quick_replies_attributes': quick_replies}
+            data={
+                'content': message,
+                'quick_replies_attributes': quick_replies,
+                'audio_remote_url': audio_remote_url,
+                }
             )
 
     def handle_message(self, callback):

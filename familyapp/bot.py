@@ -25,7 +25,7 @@ class Bot(object):
         
     def send_message(self, family_id, conversation_id, message, **kwargs):
         quick_replies = kwargs.get('quick_replies', [])
-        audio_remote_url = kwargs.get('audio_remote_url', None)
+        audio_remote_url = kwargs.get('audio_remote_url', '')
 
         """send textual message"""
         return self._request(

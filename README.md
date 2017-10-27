@@ -8,5 +8,5 @@ A python wrapper for the FamilyApp API
 Install library
 
 ```
-$ pip insall familyapp.py
+$ pip install familyapp.py
 ```

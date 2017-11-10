@@ -127,13 +127,6 @@ class Bot(object):
         quick_replies = [x.as_dict() for x in quick_replies] if quick_replies else []
 
         """send textual message"""
-        print({
-                'content': message,
-                'template_attributes': template.as_dict(),
-                'quick_replies_attributes': quick_replies,
-                'audio_remote_url': audio_remote_url,
-                'photo': photo_base64,
-            })
         return self._request(
             'POST',
             'bot_api/v1/families/%d/conversations/%d/messages' % (family_id, conversation_id),

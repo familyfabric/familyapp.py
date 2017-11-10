@@ -9,11 +9,81 @@ class APIException(Exception):
 
 class QuickReplay(object):
     def __init__(self, title, payload=None):
+        """Quick Replay
+
+        :param title: text of the button (required)
+        :type title: str
+        :param payload: string with payload (optional)
+        :type payload: str
+        """
         self.title = title
         self.payload = payload
 
     def as_dict(self):
         return {'title': self.title, 'payload': self.payload}
+
+
+class Button(object):
+    def __init__(self, title, payload=None, web_url=None):
+        """Button Attributes
+
+        :param title: text of the button (required)
+        :type title: str
+        :param payload: string with payload (optional)
+        :type payload: str
+        :param web_url: URL to the page (optional)
+        :type web_url: str
+        """
+        self.title = title
+        self.payload = payload
+        self.web_url = web_url
+
+    @property
+    def type(self):
+        return 'postback' if self.payload else ':web_url'
+
+    def as_dict(self):
+        return {'title': self.title, 'payload': self.payload, 'url': self.web_url, 'button_type': self.type}
+
+
+class Element(object):
+    def __init__(self, title, subtitle=None, image=None):
+        """Element Attributes
+
+        :param title: text of the element (required)
+        :type title: str
+        :param subtitle: subtitle of element (optional)
+        :type subtitle: str
+        :param image: base64 of the image
+        :type image: str
+        """
+        self.title = title
+        self.subtitle = subtitle
+        self.image = image
+
+    def as_dict(self):
+        return {'title': self.title, 'subtitle': self.subtitle, 'image': self.image}
+
+
+class Template(object):
+    def __init__(self, buttons=None, elements=None, template_type='buttons'):
+        """Builder for template object
+
+        :param buttons: List of ButtonAttributes (optional)
+        :type buttons: list
+        :param elements: List ob ElementAttributes (optional)
+        :type elements: list
+        :param template_type: Type of template ('buttons' or 'list') (optional)
+        :type str
+        """
+        self.template_type = template_type
+        self.buttons = buttons if buttons else []
+        self.elements = elements if elements else []
+
+    def as_dict(self):
+        buttons = [x.as_dict() for x in self.buttons]
+        elements = [x.as_dict() for x in self.elements]
+        return {'buttons_attributes': buttons, 'elements_attributes': elements, 'template_type': self.template_type}
 
 
 class Bot(object):
@@ -34,8 +104,8 @@ class Bot(object):
 
         raise APIException(r.text, status_code=r.status_code)
 
-    def send_message(self, family_id, conversation_id, message, quick_replies=None, audio_remote_url=None,
-                     photo_base64=None):
+    def send_message(self, family_id, conversation_id, message, quick_replies=None, template=None,
+                     audio_remote_url=None, photo_base64=None):
         """send message to selected conversation
 
         :param family_id: ID of selected family (required)
@@ -46,20 +116,30 @@ class Bot(object):
         :type message: str
         :param quick_replies: list of QuickReplay (optional)
         :type quick_replies: list
+        :param template: Template object
+        :type Template
         :param audio_remote_url: link to remote file location, will be downloaded by the server (optional)
         :type audio_remote_url: str
         :param photo_base64: base64 string of the image
         :type photo_base64: str
         :return: request object
         """
-        quick_replies = [] if not quick_replies else map(lambda x: x.as_dict(), quick_replies)
+        quick_replies = [x.as_dict() for x in quick_replies] if quick_replies else []
 
         """send textual message"""
+        print({
+                'content': message,
+                'template_attributes': template.as_dict(),
+                'quick_replies_attributes': quick_replies,
+                'audio_remote_url': audio_remote_url,
+                'photo': photo_base64,
+            })
         return self._request(
             'POST',
             'bot_api/v1/families/%d/conversations/%d/messages' % (family_id, conversation_id),
             data={
                 'content': message,
+                'template_attributes': template.as_dict(),
                 'quick_replies_attributes': quick_replies,
                 'audio_remote_url': audio_remote_url,
                 'photo': photo_base64,

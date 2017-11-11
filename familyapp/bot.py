@@ -132,7 +132,7 @@ class Bot(object):
             'bot_api/v1/families/%d/conversations/%d/messages' % (family_id, conversation_id),
             data={
                 'content': message,
-                'template_attributes': template.as_dict(),
+                'template_attributes': template.as_dict() if template else None,
                 'quick_replies_attributes': quick_replies,
                 'audio_remote_url': audio_remote_url,
                 'photo': photo_base64,

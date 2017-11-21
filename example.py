@@ -6,4 +6,3 @@ if __name__ == "__main__":
         Button("test", "TEST_BUTTON"),
         Button("test2", "TEST2_BUTTON"),
     ]))
-    print(r)

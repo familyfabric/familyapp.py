@@ -7,9 +7,9 @@ class APIException(Exception):
         self.status_code = status_code
 
 
-class QuickReplay(object):
+class QuickReply(object):
     def __init__(self, title, payload=None):
-        """Quick Replay
+        """Quick Reply
 
         :param title: text of the button (required)
         :type title: str
@@ -114,7 +114,7 @@ class Bot(object):
         :type conversation_id: int
         :param message: content of the message (optional)
         :type message: str
-        :param quick_replies: list of QuickReplay (optional)
+        :param quick_replies: list of QuickReply (optional)
         :type quick_replies: list
         :param template: Template object
         :type Template
@@ -137,6 +137,47 @@ class Bot(object):
                 'audio_remote_url': audio_remote_url,
                 'photo': photo_base64,
             }
+        )
+
+    def get_conversation(self, family_id, conversation_id):
+        """get conversation data
+
+        {
+            "id": 1,
+            "channel_id": 10,
+            "family_users": [
+                {
+                    "id": 1,
+                    "username": "John",
+                    "photo_url": "",
+                    "photo_medium_url": "",
+                    "email": "support@familyapp.net",
+                    "phone_number: "+100000000",
+                    "admin": false,
+                    "child_account": true
+                },
+                {
+                    "id": 2,
+                    "username": "Bob",
+                    "photo_url": "",
+                    "photo_medium_url": "",
+                    "email": "bob@familyapp.net",
+                    "phone_number: "+100000002",
+                    "admin": true,
+                    "child_account": false
+                }
+            ]
+        }
+
+        :param family_id:
+        :type int
+        :param conversation_id:
+        :type int
+        :return:
+        """
+        return self._request(
+            'GET',
+            'bot_api/v1/families/%d/conversations/%d' % (family_id, conversation_id),
         )
 
     def update_family_user(self, family_id, user_id, username=None, phone_number=None, email=None, birthday=None,
@@ -212,14 +253,17 @@ class Bot(object):
         """parse incoming requests"""
         if not headers:
             headers = {}
+
         verify_token = headers.get('Authorization', None)
         event = json_payload.get('event_key', None)
 
         if verify_token != self.verify_token:
             raise Exception("Invalid verify_token")
 
-        if not event in self._handlers:
-            raise Exception("You have to define @familyapp.parse_request")
+        if event not in self._handlers:
+            raise Exception("You have to define @bot.parse_request")
 
-        del json_payload['event_key']
-        self._handlers[event](json_payload)
+        if 'event_data' not in json_payload:
+            raise Exception("Invalid JSON payload")
+
+        self._handlers[event](json_payload['event_data'])

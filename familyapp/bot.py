@@ -255,13 +255,13 @@ class Bot(object):
             headers = {}
 
         verify_token = headers.get('Authorization', None)
-        event = json_payload.get('event_key', None)
+        event = json_payload.get('event_type', None)
 
         if verify_token != self.verify_token:
             raise Exception("Invalid verify_token")
 
         if event not in self._handlers:
-            raise Exception("You have to define @bot.parse_request")
+            raise Exception("This event type is not handled")
 
         if 'event_data' not in json_payload:
             raise Exception("Invalid JSON payload")

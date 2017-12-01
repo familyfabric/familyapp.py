@@ -230,6 +230,12 @@ class Bot(object):
                 'photo': photo,
             }
         )
+    
+    def handle_channel_added(self, callback):
+        """triggered when family adds channel
+        READ MORE: https://familyappbot.docs.apiary.io/#introduction/webhooks/4.-receive-messages
+        """
+        self._handlers['add_channel_to_family'] = callback
 
     def handle_message(self, callback):
         """triggered when new messages has been sent

@@ -267,7 +267,7 @@ class Bot(object):
             raise Exception("Invalid verify_token")
 
         if event not in self._handlers:
-            raise Exception("This event type is not handled")
+            raise Exception("Event type ({}) is not handled".format(event))
 
         if 'event_data' not in json_payload:
             raise Exception("Invalid JSON payload")

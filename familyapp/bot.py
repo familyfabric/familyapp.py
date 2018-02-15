@@ -231,6 +231,62 @@ class Bot(object):
             }
         )
     
+    def update_persistent_menu(self, persistant_menu):
+        """update peristant menu
+
+        {
+            "persistent_menu": [
+                {
+                    "locale": "default",
+                    "composer_input_disabled": false,
+                    "call_to_actions": [
+                        {
+                            "title": "WP",
+                            "type": "web_url",
+                            "url": "http://www.wp.pl"
+                        },
+                        {
+                            "title": "Actions",
+                            "type": "nested",
+                            "call_to_actions": [
+                                {
+                                    "title": "Quick Replies",
+                                    "type": "postback",
+                                    "payload": "QUICK"
+                                },
+                                {
+                                    "title": "Template Buttons",
+                                    "type": "postback",
+                                    "payload": "BUTTONS"
+                                },
+                                {
+                                    "title": "Template List",
+                                    "type": "postback",
+                                    "payload": "LIST"
+                                },
+                                {
+                                    "title": "Template Carousel",
+                                    "type": "postback",
+                                    "payload": "CAROUSEL"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+
+        :param persistent_menu:
+        :type json
+        """
+        return self._request(
+            'PATCH',
+            'bot_api/v1/bot',
+            data={
+                'persistant_menu' = self.persistant_menu
+            }
+        )
+    
     def handle_channel_added(self, callback):
         """triggered when family adds channel
         READ MORE: https://familyappbot.docs.apiary.io/#introduction/webhooks/4.-receive-messages

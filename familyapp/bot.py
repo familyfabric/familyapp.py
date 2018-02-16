@@ -43,7 +43,12 @@ class Button(object):
         return 'postback' if self.payload else ':web_url'
 
     def as_dict(self):
-        return {'title': self.title, 'payload': self.payload, 'url': self.web_url, 'button_type': self.type}
+        return {
+            'title': self.title, 
+            'payload': self.payload, 
+            'url': self.web_url, 
+            'button_type': self.type
+        }
 
 
 class Element(object):
@@ -62,7 +67,11 @@ class Element(object):
         self.image = image
 
     def as_dict(self):
-        return {'title': self.title, 'subtitle': self.subtitle, 'image': self.image}
+        return {
+            'title': self.title, 
+            'subtitle': self.subtitle, 
+            'image': self.image
+        }
 
 
 class Template(object):
@@ -83,7 +92,11 @@ class Template(object):
     def as_dict(self):
         buttons = [x.as_dict() for x in self.buttons]
         elements = [x.as_dict() for x in self.elements]
-        return {'buttons_attributes': buttons, 'elements_attributes': elements, 'template_type': self.template_type}
+        return {
+            'buttons_attributes': buttons, 
+            'elements_attributes': elements, 
+            'template_type': self.template_type
+        }
 
 
 class Bot(object):
@@ -95,17 +108,24 @@ class Bot(object):
 
     def _request(self, method, suffix_url, data):
         if method.lower() not in ['get', 'post', 'patch']:
-            raise APIException("Invalid method type, only [get, post, patch] is supported")
+            raise APIException(
+                "Invalid method type, only [get, post, patch] is supported"
+            )
 
-        headers = {'User-Agent': 'familyapp.py/0.0.6', 'Authorization': self.token}
-        r = getattr(requests, method.lower())(self.url + suffix_url, json=data, headers=headers)
+        headers = {
+            'User-Agent': 'familyapp.py/0.0.6', 
+            'Authorization': self.token
+            }
+        r = getattr(requests, method.lower())(
+                self.url + suffix_url, json=data, headers=headers
+            )
         if r.status_code in [200, 201]:
             return r.json()
 
         raise APIException(r.text, status_code=r.status_code)
 
-    def send_message(self, family_id, conversation_id, message, quick_replies=None, template=None,
-                     audio_remote_url=None, photo_base64=None):
+    def send_message(self, family_id, conversation_id, message, quick_replies=None, 
+                    template=None, audio_remote_url=None, photo_base64=None):
         """send message to selected conversation
 
         :param family_id: ID of selected family (required)
@@ -170,9 +190,9 @@ class Bot(object):
         }
 
         :param family_id:
-        :type int
+        :type family_id: int
         :param conversation_id:
-        :type int
+        :type conversation_id: int
         :return:
         """
         return self._request(
@@ -183,10 +203,10 @@ class Bot(object):
     def create_conversation(self, family_id, title):
         """create conversation
 
-        :param family_id:
-        :type int
+        :param family_id: ID of selected family (required)
+        :type family_id: int
         :param title:
-        :type str
+        :type title: str
         """
         return self._request(
             'POST',
@@ -196,8 +216,8 @@ class Bot(object):
             }
         )
 
-    def update_family_user(self, family_id, user_id, username=None, phone_number=None, email=None, birthday=None,
-                           photo=None, photo_remote_url=None):
+    def update_family_user(self, family_id, user_id, username=None, phone_number=None, 
+                           email=None, birthday=None, photo=None, photo_remote_url=None):
         """update family member profile
 
         :param family_id: ID of selected family (required)
@@ -325,7 +345,7 @@ class Bot(object):
         }
 
         :param persistent_menu:
-        :type json
+        :type persistent_menu: json
         """
         return self._request(
             'PATCH',

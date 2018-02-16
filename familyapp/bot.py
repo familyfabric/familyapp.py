@@ -247,6 +247,38 @@ class Bot(object):
             }
         )
     
+    def create_event(self, family_id, title, description, start_time, end_time):
+        """create event in family calendar
+
+        :param family_id: ID of selected family (required)
+        :type family_id: int
+        :param title: title of event (required)
+        :type title: str
+        :param description: description of event
+        :type description: str
+        :param start_time: start date of event, formatted as MM.DD.YYYY (required)
+        :type start_time: datetime
+        :param end_time: end date of event, formatted as MM.DD.YYYY (required)
+        :type end_time: datetime
+        :param recurring: formatted with RRULE recurring event format (optional)
+        :type recurring: str
+        :param family_user_ids
+        :type family_user_ids: list
+        :return: request object
+        """
+        return self._request(
+            'POST',
+            'bot_api/v1/families/%d/events' % (family_id),
+            data={
+                'title': title,
+                'description': description,
+                'start_time': start_time,
+                'end_time': end_time,
+                'recurring': recurring,
+                'family_user_ids': family_user_ids
+            }
+        )
+    
     def update_persistent_menu(self, persistant_menu):
         """update peristant menu
 

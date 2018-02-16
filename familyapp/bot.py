@@ -180,6 +180,22 @@ class Bot(object):
             'bot_api/v1/families/%d/conversations/%d' % (family_id, conversation_id),
         )
 
+    def create_conversation(self, family_id, title):
+        """create conversation
+
+        :param family_id:
+        :type int
+        :param title:
+        :type str
+        """
+        return self._request(
+            'POST',
+            'bot_api/v1/families/%d/conversations' % (family_id),
+            data={
+                'title': title,
+            }
+        )
+
     def update_family_user(self, family_id, user_id, username=None, phone_number=None, email=None, birthday=None,
                            photo=None, photo_remote_url=None):
         """update family member profile

@@ -80,7 +80,7 @@ class Template(object):
 
         :param buttons: List of ButtonAttributes (optional)
         :type buttons: list
-        :param elements: List ob ElementAttributes (optional)
+        :param elements: List of ElementAttributes (optional)
         :type elements: list
         :param template_type: Type of template ('buttons' or 'list') (optional)
         :type str
@@ -113,11 +113,11 @@ class Bot(object):
             )
 
         headers = {
-            'User-Agent': 'familyapp.py/0.0.6', 
+            'User-Agent': 'familyapp.py/0.0.11', 
             'Authorization': self.token
             }
         r = getattr(requests, method.lower())(
-                self.url + suffix_url, json=data, headers=headers
+                self.url + suffix_url, json=data, headers=headers, verify=False
             )
         if r.status_code in [200, 201]:
             return r.json()
@@ -299,7 +299,7 @@ class Bot(object):
             }
         )
     
-    def update_persistent_menu(self, persistant_menu):
+    def update_persistent_menu(self, persistent_menu):
         """update peristant menu
 
         {
@@ -351,7 +351,7 @@ class Bot(object):
             'PATCH',
             'bot_api/v1/bot',
             data={
-                'persistant_menu' = self.persistant_menu
+                'persistent_menu': persistent_menu
             }
         )
     

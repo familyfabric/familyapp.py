@@ -5,3 +5,7 @@ services:
     build: .
     volumes:
       - .:/usr/src/app
+    ports:
+      - 80:80
+    environment:
+      - FLASK_ENV=development

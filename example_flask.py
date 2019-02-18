@@ -5,20 +5,25 @@ from familyapp.bot import Bot, Button, Template
 
 app = Flask(__name__)
 
+count = 0
+
 
 def handleChannelAdded(parameters):
+    print('handleChannelAdded')
     print(parameters)
 
 
 def handle_message(parameters):
     print('Message')
     print(parameters)
+    global count
+    count += 1
     bot.send_message(parameters['family_id'],
-                     parameters['conversation_id'], 'lame',)
+                     parameters['conversation_id'], 'Planning message '+str(count))
 
 
-bot = Bot(token="1630036277D45C5E12C8E17915141B25C603240211E148F3C79AD3415238FA35",
-          verify_token="F45D2F889667CCD3E91E4EC7658934B3DDB782DFD9FD62A59DBE39B5DA321ABF", url='https://api.staging.familyapp.com/')
+bot = Bot(token='',
+          verify_token='', url='', keys_path='static')
 bot.handle_channel_added(handleChannelAdded)
 bot.handle_message(handle_message)
 

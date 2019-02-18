@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 from Crypto.Cipher import PKCS1_v1_5
 import pickle
 import base64
+import os
 
 
 class APIException(Exception):
@@ -119,9 +120,12 @@ class Bot(object):
         self.token = token
         self.verify_token = verify_token
         self.url = kwargs.get('url', 'https://api.familyapp.com/')
+        self.keys_path = kwargs.get('keys_path', '')
         self._init_data()
 
     def _init_data(self):
+        if not os.path.exists(self.keys_path):
+            os.makedirs(self.keys_path)
         self.data = {'rsa_private': None,
                      'rsa_public': None,
                      'rsa_id': None}
@@ -133,7 +137,7 @@ class Bot(object):
 
     def _load_data(self):
         try:
-            with open(f'rsa_{self.token}.pickle', 'rb') as handle:
+            with open(os.path.join(self.keys_path, f'rsa_{self.token}.pickle'), 'rb') as handle:
                 self.data = pickle.load(handle)
         except(OSError, IOError) as e:
             print(e)
@@ -142,7 +146,7 @@ class Bot(object):
 
     def _save_data(self):
         try:
-            with open(f'rsa_{self.token}.pickle', 'wb') as handle:
+            with open(os.path.join(self.keys_path, f'rsa_{self.token}.pickle'), 'wb') as handle:
                 pickle.dump(self.data, handle,
                             protocol=pickle.HIGHEST_PROTOCOL)
         except(OSError, IOError, FileNotFoundError) as e:
@@ -150,7 +154,7 @@ class Bot(object):
 
     def _load_conversation_data(self):
         try:
-            with open(f'conversations_{self.token}.pickle', 'rb') as handle:
+            with open(os.path.join(self.keys_path, f'conversations_{self.token}.pickle'), 'rb') as handle:
                 self.conversation_data = pickle.load(handle)
         except(OSError, IOError) as e:
             print(e)
@@ -159,7 +163,7 @@ class Bot(object):
 
     def _save_conversation_data(self):
         try:
-            with open(f'conversations_{self.token}.pickle', 'wb') as handle:
+            with open(os.path.join(self.keys_path, f'conversations_{self.token}.pickle'), 'wb') as handle:
                 pickle.dump(self.conversation_data, handle,
                             protocol=pickle.HIGHEST_PROTOCOL)
         except(OSError, IOError, FileNotFoundError) as e:
@@ -288,6 +292,8 @@ class Bot(object):
 
         self.encryptMessage(family_id, conversation_id, data)
 
+        print('Send')
+        print(data)
         """send textual message"""
         return self._request(
             'POST',
@@ -298,14 +304,12 @@ class Bot(object):
     def encryptMessage(self, family_id, conversation_id, data):
         (key, conversation_key_version_id) = self.get_conversation_key_if_exists(
             family_id, conversation_id)
-        if key is  None:
+        if key is None:
             return data
         IV = Random.new().read(AES.block_size)
         cipher = AES.new(key, AES.MODE_CBC, IV)
         message = cipher.encrypt(self._pad(data['content']))
         IV_base64 = base64.b64encode(IV)
-        print('Send')
-        print(base64.b64decode(IV_base64))
         message_base64 = base64.b64encode(message)
         data['content'] = message_base64.decode("utf-8")
         data['iv'] = IV_base64.decode("utf-8")

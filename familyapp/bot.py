@@ -292,8 +292,6 @@ class Bot(object):
 
         self.encryptMessage(family_id, conversation_id, data)
 
-        print('Send')
-        print(data)
         """send textual message"""
         return self._request(
             'POST',
